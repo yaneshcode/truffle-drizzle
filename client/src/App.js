@@ -5,10 +5,38 @@ import ReadString from './ReadString';
 import SetString from './SetString';
 
 class App extends Component {
-  state = { loading: true, drizzleState: null };
+  state = { loading: true,
+    response: '',
+    post: '',
+    responseToPost: '',
+    drizzleState: null };
+
+  callApi = async () => {
+    const response = await fetch('/api/hello');
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
+  handleSubmit = async e => {
+    e.preventDefault();
+    const response = await fetch('/api/world', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ post: this.state.post }),
+    });
+    const body = await response.text();
+    this.setState({ responseToPost: body });
+  };
 
   componentDidMount() {
     const { drizzle } = this.props;
+
+    // Server call
+    this.callApi()
+      .then(res => this.setState({ response: res.express }))
+      .catch(err => console.log(err));
 
     // subscribe to changes in the store
     this.unsubscribe = drizzle.store.subscribe(() => {
@@ -39,6 +67,20 @@ class App extends Component {
           drizzle={this.props.drizzle}
           drizzleState={this.state.drizzleState}
         />
+
+        <p>{this.state.response}</p>
+        <form onSubmit={this.handleSubmit}>
+          <p>
+            <strong>Post to Server:</strong>
+          </p>
+          <input
+            type="text"
+            value={this.state.post}
+            onChange={e => this.setState({ post: e.target.value })}
+          />
+          <button type="submit">Submit</button>
+        </form>
+        <p>{this.state.responseToPost}</p>
 </div>;
   }
 }
