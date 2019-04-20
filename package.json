@@ -20,6 +20,8 @@
   "bugs": {
     "url": "https://github.com/yaneshcode/truffle-drizzle/issues"
   },
+  "proxy": "http://localhost:5000/",
+  
   "homepage": "https://github.com/yaneshcode/truffle-drizzle#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
